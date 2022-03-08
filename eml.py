@@ -22,10 +22,20 @@ def load_ConceptNet5():
    nodes.extend(list(node2s))
    return nodes, relations
 
+# Assumes wikidata cs source file in wikidata folder
+def load_WikidataCS():
+   df = pd.read_csv('Wikidata/wikidata-cs-20200504.tsv',sep='\t', error_bad_lines=False)
+   relations = set(df['relation'])
+   node1s = set(df['node1;label'])
+   node2s = set(df['node2;label'])
+   nodes = list(node1s)
+   nodes.extend(list(node2s))
+   return nodes,relations
+
 def el2(em, nodelist):
    el_list = list()
    for node in nodelist:
-       if em in node:
+       if em in str(node):
            el_list.append(node)
    return difflib.get_close_matches(em,el_list, cutoff=0.3)
    
@@ -35,4 +45,3 @@ def el(em, nodelist):
        if em in node:
            el_list.append(node)
    return el_list
-
