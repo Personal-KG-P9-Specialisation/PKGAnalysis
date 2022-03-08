@@ -10,11 +10,11 @@ def load_CSKG():
    nodes.extend(list(node2s))
    return nodes,relations
 
-# Assumes conceptnet 5.5 source file in conceptnet folder
+# Assumes conceptnet 5.5 / 5.7 source file in conceptnet folder
 def load_ConceptNet5():
    # The graph is available at: https://github.com/commonsense/conceptnet5/wiki/Downloads
    # It will be downloaded as .csv but is tab-seperated
-   df = pd.read_csv('ConceptNet/cn5.tsv',sep='\t', error_bad_lines=False)
+   df = pd.read_csv('ConceptNet/assertions.tsv',sep='\t', error_bad_lines=False)
    relations = set(df.iloc[:,1])
    node1s = set(df.iloc[:,2])
    node2s = set(df.iloc[:,3])
