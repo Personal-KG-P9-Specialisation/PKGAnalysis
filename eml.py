@@ -8,7 +8,7 @@ def load_CSKG():
    node2s = set(df['node2'])
    nodes = list(node1s)
    nodes.extend(list(node2s))
-   return nodes,relations
+   return list(set(nodes)),relations
 
 # Assumes conceptnet 5.5 / 5.7 source file in conceptnet folder
 def load_ConceptNet5(path):
@@ -20,7 +20,7 @@ def load_ConceptNet5(path):
    node2s = set(df.iloc[:,3])
    nodes = list(node1s)
    nodes.extend(list(node2s))
-   return nodes, relations
+   return list(set(nodes)), relations
 
 # Assumes wikidata cs source file in wikidata folder
 def load_WikidataCS():
@@ -47,4 +47,5 @@ def el(em, nodelist):
    return el_list
 if __name__ == "__main__":
     _,relations = load_ConceptNet5('ConceptNet/conceptnet-assertions-5.7.0.csv')
+    _,relations = load_CSKG()
     print(relations)
