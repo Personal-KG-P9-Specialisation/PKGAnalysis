@@ -45,3 +45,25 @@ def el(em, nodelist):
        if em in node:
            el_list.append(node)
    return el_list
+
+def load_conv():
+   df = pd.read_csv('conv.tsv',sep='\t', error_bad_lines=False)
+   nlp = spacy.load("en_core_web_md")
+   nlp.add_pipe("entityLinker", last=True)
+   
+   utterances = list(df.iloc[:,1])
+   spans = list()
+
+   for utterance in utterances:
+      doc = nlp(utterance)
+      for entity in doc._.linkedEntities:
+         spans.append(entity.get_span())
+   return spans
+
+if __name__ == "__main__":
+   spans = load_conv()
+   nodes, relations = load_CSKG()
+   for span in spans:
+      matches = el2(span, nodes)
+      if not matches:
+         print("No matches found")
