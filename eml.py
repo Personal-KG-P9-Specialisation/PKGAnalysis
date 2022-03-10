@@ -45,10 +45,6 @@ def el(em, nodelist):
        if em in node:
            el_list.append(node)
    return el_list
-if __name__ == "__main__":
-    _,relations = load_ConceptNet5('ConceptNet/conceptnet-assertions-5.7.0.csv')
-    _,relations = load_CSKG()
-    print(relations)
 
 def load_conv():
    df = pd.read_csv('conv.tsv',sep='\t', error_bad_lines=False)
