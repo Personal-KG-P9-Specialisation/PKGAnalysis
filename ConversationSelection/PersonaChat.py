@@ -41,8 +41,8 @@ def aversion_relation(content):
             rank += content.count(relation)
     return rank
 
-def rank_data():
-    with open('tmp.jsonl', 'r') as json_file:
+def rank_data(conv_data, output_dir):
+    with open(conv_data, 'r') as json_file:
         json_list = list(json_file)
 
     i = 1
@@ -60,7 +60,7 @@ def rank_data():
                 content = content + tmp[-1] + "\n"
         
         rank += possesive_pronouns(content)
-        filename = 'conversations/' + str(rank) + 'conv' + str(i) + '.txt'
+        filename = output_dir + str(rank) + 'conv' + str(i) + '.txt'
         if rank != 0:
             with open(filename, 'w') as f:
                 f.write(content)
@@ -68,5 +68,5 @@ def rank_data():
 
 
 if __name__ == "__main__":
-    rank_data()
+    rank_data('/home/test/Github/PKGAnnotationSystem/personachat/personachat_combined.jsonl', '/home/test/Github/PKGAnnotationSystem/convs/')
 

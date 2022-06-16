@@ -1,5 +1,10 @@
 import difflib, pandas as pd
+import spacy
 
+import warnings
+warnings.filterwarnings('ignore')
+
+#docker attach --detach-keys="ctrl-p" pkganalysis_analysis_1
 # Assumes cskg source file in CSKG folder
 def load_CSKG():
    df = pd.read_csv('CSKG/cskg.tsv',sep='\t', error_bad_lines=False)
@@ -8,6 +13,7 @@ def load_CSKG():
    node2s = set(df['node2'])
    nodes = list(node1s)
    nodes.extend(list(node2s))
+   nodes = [x for x in nodes if x.startswith('/c/en')]
    return list(set(nodes)),relations
 
 # Assumes conceptnet 5.5 / 5.7 source file in conceptnet folder
@@ -20,6 +26,7 @@ def load_ConceptNet5(path):
    node2s = set(df.iloc[:,3])
    nodes = list(node1s)
    nodes.extend(list(node2s))
+   nodes = [x for x in nodes if x.startswith('/c/en')]
    return list(set(nodes)), relations
 
 # Assumes wikidata cs source file in wikidata folder
@@ -30,14 +37,14 @@ def load_WikidataCS():
    node2s = set(df['node2;label'])
    nodes = list(node1s)
    nodes.extend(list(node2s))
-   return nodes,relations
+   return list(set(nodes)),relations
 
-def el2(em, nodelist):
+def el2(em, nodelist, cutoff = 0.3):
    el_list = list()
    for node in nodelist:
        if em in str(node):
            el_list.append(node)
-   return difflib.get_close_matches(em,el_list, cutoff=0.3)
+   return difflib.get_close_matches(em,el_list, cutoff=cutoff)
    
 def el(em, nodelist):
    el_list = list()
@@ -57,13 +64,39 @@ def load_conv():
    for utterance in utterances:
       doc = nlp(utterance)
       for entity in doc._.linkedEntities:
-         spans.append(entity.get_span())
+         spans.append(entity.get_span().text)
    return spans
 
-if __name__ == "__main__":
-   spans = load_conv()
-   nodes, relations = load_CSKG()
+def print_statistics(spans, nodes, cutoff=0.3):
+   count = 0
+   #spans = list(set(spans))
    for span in spans:
-      matches = el2(span, nodes)
+      matches = el2(span, nodes, cutoff=cutoff)
       if not matches:
-         print("No matches found")
+         print(f"No match for: {span:>12}")
+         count += 1
+   print(f'Amount of No matches are:\t{count} of {len(spans)}\n')
+
+"""if __name__ == "__main__":
+   spans = load_conv()
+   
+   nodes1, _ = load_CSKG()
+   print('---'*20,'\n')
+   print('CSKG1\n')
+   print_statistics(spans,nodes1)
+   print('---'*20,'\n')
+
+   print('ConceptNet 5.7\n')
+   nodes2, _ = load_ConceptNet5('ConceptNet/conceptnet-assertions-5.7.0.csv')
+   print_statistics(spans,nodes2)"""
+
+"""print('---'*20,'\n')
+   print('ConceptNet 5.5\n')
+   nodes3, _ = load_ConceptNet5('ConceptNet/assertions5-5.tsv')
+   print_statistics(spans,nodes3)
+   print('---'*20,'\n')"""
+
+"""print('WikidataCS\n')
+   nodes, _ = load_WikidataCS()
+   print_statistics(spans, nodes)  
+   print('---'*20,'\n')"""
